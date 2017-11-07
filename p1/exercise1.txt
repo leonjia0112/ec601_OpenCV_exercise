@@ -1,0 +1,8 @@
+Matrix elements are store row by row. To access the element (i, j), 
+i is the row index, j is the column index. Member funciton first
+read the row number, then read the column number, and it read the
+type of input after. For the input type, it could be RGB, or other
+type of the image. For RGB, each element contains information of
+one pixel, which is R(red), G(green) and B(blue) information. Image
+then store with each pixel in its row column location and pixel 
+pixel information.
