@@ -1,65 +1,61 @@
-import os
+import numpy as np
 import sys
 import cv2
-import numpy as np
 
-MEANS = [0, 50, 10, 20]
-SIGMAS = [0, 20, 50, 100]
-BLKS = [0.01, 0.03, 0.05, 0.4]
-WHTS = [0.01, 0.03, 0.05, 0.4]
-KERNAL = [3, 5, 7]
+ftype = ".png"
+path = 'result/'
+
+kernels = [3, 5, 7]
+means = [0, 50, 10, 20]
+sigmas = [0, 20, 50, 100]
+pa_values = [0.01, 0.03, 0.05, 0.4]
+pb_values = [0.01, 0.03, 0.05, 0.4]
+
+
 
 def main():
     if len(sys.argv) < 2:
         exit(1)
     image = cv2.imread(sys.argv[1])
-    if ".png" in sys.argv[1]:
-        ftype = ".png"
-    else:
-        ftype = ".jpg"
-    for kernal in KERNAL:
-        for mean in MEANS:
-            for sigma in SIGMAS:        
+    for kernal in kernels:
+        for mean in means:
+            for sigma in sigmas:  
+
+                # add noise      
                 noise = image.copy()
                 cv2.randn(noise, mean, sigma)
-                GN_img = np.add(image, noise)
-                GN_img_bf = cv2.blur(GN_img, (kernal, kernal))
-                GN_img_gf = cv2.GaussianBlur(GN_img, (kernal, kernal), 1.5)
-                GN_img_mf = cv2.medianBlur(GN_img, kernal)
-                target = ("./Exercise3_Output/"+sys.argv[1].rstrip(ftype)+
-                          "/Gaussian/K"+str(kernal)+"_M"+str(mean)+
-                          "_S"+str(sigma)+"/"
-                )
-                if not os.path.exists(target):
-                    os.makedirs(target)
-                cv2.imwrite(target+"Noise"+ftype, GN_img)
-                cv2.imwrite(target+"Box_Filter"+ftype, GN_img_bf)
-                cv2.imwrite(target+"Gaussian_Filter"+ftype, GN_img_gf)
-                cv2.imwrite(target+"Median_Filter"+ftype, GN_img_mf)
-        for blks in BLKS:
-            for whts in WHTS:
-                SP_img = image.copy()
-                for i in range(int(SP_img.shape[0]*SP_img.shape[1]*blks)):
-                    rows = np.random.randint(0, SP_img.shape[0])
-                    cols = np.random.randint(0, SP_img.shape[1])
-                    SP_img[rows, cols] = 0
-                for i in range(int(SP_img.shape[0]*SP_img.shape[1]*whts)):
-                    rows = np.random.randint(0, SP_img.shape[0])
-                    cols = np.random.randint(0, SP_img.shape[1])
-                    SP_img[rows, cols] = 255
-                SP_img_bf = cv2.blur(SP_img, (3,3))
-                SP_img_gf = cv2.GaussianBlur(SP_img, (3,3), 1.5)
-                SP_img_mf = cv2.medianBlur(SP_img, 3)
-                target = ("./Exercise3_Output/"+sys.argv[1].rstrip(ftype)+
-                          "/Salt_and_Pepper/K"+str(kernal)+"_B"+
-                          str(int(100*blks))+"_W"+str(int(100*whts))+"/"
-                )
-                if not os.path.exists(target):
-                    os.makedirs(target)
-                cv2.imwrite(target+"Noise"+ftype, SP_img)
-                cv2.imwrite(target+"Box_Filter"+ftype, SP_img_bf)
-                cv2.imwrite(target+"Gaussian_Filter"+ftype, SP_img_gf)
-                cv2.imwrite(target+"Median_Filter"+ftype, SP_img_mf)
+                noise_image = np.add(image, noise)
+
+                # generate images
+                blur_image = cv2.blur(noise_image, (kernal, kernal))
+                gaussian_image = cv2.GaussianBlur(noise_image, (kernal, kernal), 1.5)
+                median_image = cv2.medianBlur(noise_image, kernal)
+
+                # save images
+                cv2.imwrite("{}Noise_s{}_m{}_k{}{}".format(path, sigma, mean, kernal, ftype), noise_image)
+                cv2.imwrite("{}Box_Filter_s{}_m{}_k{}{}".format(path, sigma, mean, kernal, ftype), blur_image)
+                cv2.imwrite("{}Gaussian_Filter_s{}_m{}_k{}{}".format(path, sigma, mean, kernal, ftype), gaussian_image)
+                cv2.imwrite("{}Median_Filter_s{}_m{}_k{}{}".format(path, sigma, mean, kernal, ftype), median_image)
+        for pa in pa_values:
+            for pb in pb_values:
+
+                # add noise
+                noise = image.copy()
+                for i in range(int(noise.shape[0]*noise.shape[1]*pa)):
+                    noise[np.random.randint(0, noise.shape[0]), np.random.randint(0, noise.shape[1])] = 0
+                for i in range(int(noise.shape[0]*noise.shape[1]*pb)):
+                    noise[np.random.randint(0, noise.shape[0]), np.random.randint(0, noise.shape[1])] = 255
+
+                # generate images
+                blur_image = cv2.blur(noise, (kernal, kernal))
+                gaussian_image = cv2.GaussianBlur(noise, (kernal, kernal), 1.5)
+                median_image = cv2.medianBlur(noise, kernal)
+
+                # save images
+                cv2.imwrite("{}Noise_pa{}_pb{}_k{}{}".format(path, pa, pb, kernal, ftype), noise)
+                cv2.imwrite("{}Box_Filter_pa{}_pb{}_k{}{}".format(path, pa, pb, kernal, ftype), blur_image)
+                cv2.imwrite("{}Gaussian_Filter_pa{}_pb{}_k{}{}".format(path, pa, pb, kernal, ftype), gaussian_image)
+                cv2.imwrite("{}Median_Filter_pa{}_pb{}_k{}{}".format(path, pa, pb, kernal, ftype), median_image)
 
 if __name__ == "__main__":
     main()

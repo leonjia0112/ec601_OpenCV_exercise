@@ -1,0 +1,3 @@
+1. The larger the kernels size, the blurrier the image become.
+2. Gaussian filter the noise better than other in my oppinion. Because other fileter
+   filter out more information of the image than the Gaussian filter.
