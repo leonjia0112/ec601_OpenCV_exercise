@@ -1,0 +1,15 @@
+1.
+For rgb images, the plot of each individual image only shows the saturation of
+the image in each color, but not exactly that color.
+for hsv image, the value image has clear shape of the original, since that image
+has the color information of the image. Saturation is more about how intense is
+each colror. Hue is more showing the side of color that the pixel belongs to.
+For YCrCb image, y is the luma of the image, therefore, it has the shape info
+of the original image, cr and cb shows more the different between color, which 
+is blurry by plotting individually. The closer the color, the blurrier the image
+becomes.
+
+2.
+Range of R,G,B : 0-255, 0-255, 0-255
+Range of Y,cb,cr : 16-235/0-255, 16-235/0-255, 16-235/0-255
+Range of H,S,V : 0-360 (angle), 0-100(percent), 0-100(percent)
